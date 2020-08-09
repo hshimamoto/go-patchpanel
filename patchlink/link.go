@@ -4,6 +4,7 @@
 package main
 
 import (
+    "fmt"
     "log"
     "os"
     "time"
@@ -12,7 +13,7 @@ import (
     "github.com/hshimamoto/go-session"
 )
 
-func stream(remote, local string) {
+func stream(name, remote, local string) {
     lconn, err := session.Dial(local)
     if err != nil {
 	log.Println(err)
@@ -25,7 +26,7 @@ func stream(remote, local string) {
 	return
     }
     defer rconn.Close()
-    rconn.Write([]byte("CONNECTED test\r\n"))
+    rconn.Write([]byte(fmt.Sprintf("CONNECTED %s\r\n", name)))
     log.Printf("new stream connected")
     time.Sleep(100 * time.Millisecond)
     // relay
@@ -34,21 +35,22 @@ func stream(remote, local string) {
 }
 
 func main() {
-    if len(os.Args) < 3 {
-	log.Fatal("patchlink remote local")
+    if len(os.Args) < 4 {
+	log.Fatal("patchlink name remote local")
 	return
     }
-    remote := os.Args[1]
-    local := os.Args[2]
-    log.Println(remote)
-    log.Println(local)
+    name := os.Args[1]
+    remote := os.Args[2]
+    local := os.Args[3]
+    log.Printf("name:%s", name)
+    log.Printf("link: %s-%s", remote, local)
     conn, err := session.Dial(remote)
     if err != nil {
 	log.Fatal(err)
 	return
     }
     defer conn.Close()
-    conn.Write([]byte("LINK test\r\n"))
+    conn.Write([]byte(fmt.Sprintf("LINK %s\r\n", name)))
     go func() {
 	for {
 	    // keep alive
@@ -63,6 +65,6 @@ func main() {
 	    break
 	}
 	//log.Printf("recv: %v", buf[:n])
-	go stream(remote, local)
+	go stream(name, remote, local)
     }
 }
