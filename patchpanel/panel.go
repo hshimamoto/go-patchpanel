@@ -77,15 +77,12 @@ func (p *PatchPanel)link(conn net.Conn, line string) {
     linex := strings.Split(line, " ")
     linkname := linex[1]
     log.Printf("link %s", linkname)
-    link, ok := p.Links[linkname]
-    if !ok {
-	link = &Link{ Name: linkname }
-	p.Links[linkname] = link
-    }
+    link := &Link{ Name: linkname }
     link.Conn = conn
     link.Queue = make(chan chan net.Conn)
     link.NewConn = make(chan net.Conn)
     link.Alive = true
+    p.Links[linkname] = link
     // initialized done
     // keep alive
     finish := make(chan bool)
@@ -126,7 +123,6 @@ func (p *PatchPanel)link(conn net.Conn, line string) {
 	}
     }
     log.Printf("close link %s", linkname)
-    delete(p.Links, linkname)
 }
 
 func (p *PatchPanel)connected(conn net.Conn, line string) {
