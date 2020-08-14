@@ -43,6 +43,34 @@ func readline(conn net.Conn) (string, []byte, error) {
     }
 }
 
+func readrestheader(conn net.Conn, rest []byte) ([]byte, error) {
+    if len(rest) == 2 && rest[0] == 13 && rest[1] == 10 {
+	return []byte{}, nil
+    }
+    buf := make([]byte, 256)
+    n := copy(buf, rest)
+    for {
+	r, err := conn.Read(buf[n:])
+	if err != nil {
+	    return nil, err
+	}
+	if r == 0 {
+	    return nil, fmt.Errorf("%v: EOF", conn)
+	}
+	n += r
+	if idx := bytes.Index(buf[0:n], []byte{13, 10, 13, 10}); idx >= 0 {
+	    rest := []byte{}
+	    if n > idx+4 {
+		rest = buf[idx+4:n]
+	    }
+	    return rest, nil
+	}
+	if n >= 256 {
+	    return nil, fmt.Errorf("%v: header too large", conn)
+	}
+    }
+}
+
 type Link struct {
     Name string
     Conn net.Conn
@@ -158,6 +186,12 @@ func (p *PatchPanel)connect(conn net.Conn, line string, rest []byte) {
     }
     if !link.Alive {
 	log.Printf("link %s is dead\n", linkname)
+	conn.Write([]byte("HTTP/1.0 400 Bad Request\r\n\r\n"))
+	return
+    }
+    rest, err := readrestheader(conn, rest)
+    if err != nil {
+	log.Printf("header error %v\n", err)
 	conn.Write([]byte("HTTP/1.0 400 Bad Request\r\n\r\n"))
 	return
     }
