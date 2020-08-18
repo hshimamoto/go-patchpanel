@@ -221,7 +221,11 @@ func (p *PatchPanel)Handler(conn net.Conn) {
 	p.connect(conn, line, rest)
 	return
     }
-    log.Printf("unknown: %s", line)
+    if tcp, ok := conn.(*net.TCPConn); ok {
+	log.Printf("from %s: unknown: %s", tcp.RemoteAddr().String(), line)
+    } else {
+	log.Printf("unknown: %s", line)
+    }
     conn.Close()
 }
 
