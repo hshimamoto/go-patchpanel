@@ -6,15 +6,20 @@ package main
 import (
     "bytes"
     "fmt"
+    "io/ioutil"
     "log"
     "net"
     "os"
+    "runtime"
     "strings"
     "time"
 
     "github.com/hshimamoto/go-iorelay"
     "github.com/hshimamoto/go-session"
 )
+
+var g_links int = 0
+var g_streams int = 0
 
 func readline(conn net.Conn) (string, []byte, error) {
     buf := make([]byte, 256)
@@ -86,6 +91,8 @@ type PatchPanel struct {
 
 func stream(front net.Conn, link *Link) {
     log.Printf("new stream %s", link.Name)
+    g_streams++
+    defer func() { g_streams-- }()
     q := make(chan net.Conn)
     // request new stream
     link.Queue <- q
@@ -102,6 +109,8 @@ func stream(front net.Conn, link *Link) {
 
 func (p *PatchPanel)link(conn net.Conn, line string) {
     defer conn.Close()
+    g_links++
+    defer func() { g_links-- }()
     linex := strings.Split(line, " ")
     linkname := linex[1]
     log.Printf("link %s", linkname)
@@ -229,11 +238,40 @@ func (p *PatchPanel)Handler(conn net.Conn) {
     conn.Close()
 }
 
+func memprofiler() {
+    prev := ""
+    for {
+	runtime.GC()
+	// get RSS
+	rss := "-"
+	if out, err := ioutil.ReadFile("/proc/self/status"); err == nil {
+	    lines := strings.Split(string(out), "\n")
+	    for _, line := range lines {
+		w := strings.Fields(line)
+		if w[0] == "VmRSS:" {
+		    rss = w[1]
+		    break
+		}
+	    }
+	}
+	stats := fmt.Sprintf(
+	    "==== STATS ===> RSS: %s kB | %d links, %d streams, %d goroutines",
+	    rss, g_links, g_streams, runtime.NumGoroutine())
+	if stats != prev {
+	    log.Println(stats)
+	    prev = stats
+	}
+	time.Sleep(time.Minute)
+    }
+}
+
 func main() {
     addr := ":8800"
     if len(os.Args) > 1 {
 	addr = os.Args[1]
     }
+    log.Println("start patchpanel")
+    go memprofiler()
     p := &PatchPanel{}
     p.Links = make(map[string]*Link)
     serv, err := session.NewServer(addr, p.Handler)
