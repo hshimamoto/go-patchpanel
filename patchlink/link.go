@@ -38,17 +38,28 @@ func link(name, remote, local string) {
     log.Printf("name: %s link: %s-%s", name, remote, local)
     conn, err := session.Dial(remote)
     if err != nil {
-	log.Fatal(err)
+	log.Println(err)
 	return
     }
     defer conn.Close()
     conn.Write([]byte(fmt.Sprintf("LINK %s\r\n", name)))
+
+    running := true
+
     go func() {
-	for {
+	keepalive := time.Now().Add(time.Minute)
+	for running {
+	    time.Sleep(10 * time.Second)
+	    if time.Now().Before(keepalive) {
+		continue
+	    }
 	    // keep alive
 	    conn.Write([]byte("KeepAlive\r\n"))
-	    time.Sleep(time.Minute)
+	    // next
+	    keepalive = time.Now().Add(time.Minute)
+	    log.Println("keepalive")
 	}
+	log.Println("keepalive goroutine done")
     }()
     for {
 	buf := make([]byte, 256)
@@ -59,6 +70,8 @@ func link(name, remote, local string) {
 	//log.Printf("recv: %v", buf[:n])
 	go stream(name, remote, local)
     }
+    log.Println("close connection")
+    running = false
 }
 
 func main() {
@@ -69,5 +82,9 @@ func main() {
     name := os.Args[1]
     remote := os.Args[2]
     local := os.Args[3]
-    link(name, remote, local)
+    for {
+	link(name, remote, local)
+	// interval
+	time.Sleep(10 * time.Second)
+    }
 }
