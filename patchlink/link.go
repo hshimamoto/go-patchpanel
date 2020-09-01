@@ -34,16 +34,8 @@ func stream(name, remote, local string) {
     log.Printf("stream closed")
 }
 
-func main() {
-    if len(os.Args) < 4 {
-	log.Fatal("patchlink name remote local")
-	return
-    }
-    name := os.Args[1]
-    remote := os.Args[2]
-    local := os.Args[3]
-    log.Printf("name:%s", name)
-    log.Printf("link: %s-%s", remote, local)
+func link(name, remote, local string) {
+    log.Printf("name: %s link: %s-%s", name, remote, local)
     conn, err := session.Dial(remote)
     if err != nil {
 	log.Fatal(err)
@@ -67,4 +59,15 @@ func main() {
 	//log.Printf("recv: %v", buf[:n])
 	go stream(name, remote, local)
     }
+}
+
+func main() {
+    if len(os.Args) < 4 {
+	log.Fatal("patchlink name remote local")
+	return
+    }
+    name := os.Args[1]
+    remote := os.Args[2]
+    local := os.Args[3]
+    link(name, remote, local)
 }
