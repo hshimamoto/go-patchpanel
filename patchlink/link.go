@@ -6,6 +6,7 @@ package main
 import (
     "fmt"
     "log"
+    "net"
     "os"
     "time"
 
@@ -36,12 +37,19 @@ func stream(name, remote, local string) {
 
 func link(name, remote, local string) {
     log.Printf("name: %s link: %s-%s", name, remote, local)
-    conn, err := session.Dial(remote)
-    if err != nil {
-	log.Println(err)
-	return
+
+    // try to connect forever
+    var conn net.Conn
+    for {
+	var err error
+	conn, err = session.Dial(remote)
+	if err == nil {
+	    break
+	}
+	time.Sleep(30 * time.Second)
     }
     defer conn.Close()
+
     conn.Write([]byte(fmt.Sprintf("LINK %s\r\n", name)))
 
     running := true
