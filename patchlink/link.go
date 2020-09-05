@@ -62,9 +62,15 @@ func link(name, remote, local string) {
 		continue
 	    }
 	    // keep alive
-	    conn.Write([]byte("KeepAlive\r\n"))
+	    if _, err := conn.Write([]byte("KeepAlive\r\n")); err != nil {
+		log.Printf("%s keepalive: %v\n", name, err)
+		break
+	    }
 	    // next
 	    keepalive = time.Now().Add(time.Minute)
+	}
+	if running {
+	    conn.Close()
 	}
 	log.Println("keepalive goroutine done")
     }()
