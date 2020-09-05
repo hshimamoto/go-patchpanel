@@ -99,6 +99,8 @@ func main() {
 	log.Fatal("patchlink name remote local")
 	return
     }
+    log.SetFlags(log.Flags() | log.Lmsgprefix)
+    log.SetPrefix(fmt.Sprintf("[%d] ", os.Getpid()))
     name := os.Args[1]
     remote := os.Args[2]
     local := os.Args[3]
