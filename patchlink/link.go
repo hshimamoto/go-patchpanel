@@ -28,11 +28,11 @@ func stream(name, remote, local string) {
     }
     defer rconn.Close()
     rconn.Write([]byte(fmt.Sprintf("CONNECTED %s\r\n", name)))
-    log.Printf("new stream connected")
+    log.Printf("%s new stream connected", name)
     time.Sleep(100 * time.Millisecond)
     // relay
     iorelay.RelayWithTimeout(lconn, rconn, 24 * time.Hour)
-    log.Printf("stream closed")
+    log.Printf("%s stream closed", name)
 }
 
 func link(name, remote, local string) {
@@ -51,6 +51,8 @@ func link(name, remote, local string) {
     defer conn.Close()
 
     conn.Write([]byte(fmt.Sprintf("LINK %s\r\n", name)))
+
+    log.Printf("%s link established", name)
 
     running := true
 
@@ -72,7 +74,7 @@ func link(name, remote, local string) {
 	if running {
 	    conn.Close()
 	}
-	log.Println("keepalive goroutine done")
+	log.Printf("%s keepalive goroutine done", name)
     }()
     for {
 	buf := make([]byte, 256)
@@ -83,7 +85,7 @@ func link(name, remote, local string) {
 	//log.Printf("recv: %v", buf[:n])
 	go stream(name, remote, local)
     }
-    log.Println("close connection")
+    log.Println("%s close connection", name)
     running = false
 }
 
