@@ -78,8 +78,13 @@ func link(name, remote, local string) {
     }()
     for {
 	buf := make([]byte, 256)
-	n, _ := conn.Read(buf)
+	n, err := conn.Read(buf)
+	if err != nil {
+	    log.Printf("%s read error: %v\n", name, err)
+	    break
+	}
 	if n == 0 {
+	    log.Printf("%s read close\n", name)
 	    break
 	}
 	//log.Printf("recv: %v", buf[:n])
