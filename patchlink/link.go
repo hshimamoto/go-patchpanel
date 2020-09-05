@@ -85,7 +85,7 @@ func link(name, remote, local string) {
 	//log.Printf("recv: %v", buf[:n])
 	go stream(name, remote, local)
     }
-    log.Println("%s close connection", name)
+    log.Printf("%s close connection", name)
     running = false
 }
 
