@@ -1,10 +1,10 @@
 all: patchpanel patchlink
 
 patchpanel::
-	cd patchpanel; go get; go build
+	cd patchpanel; go build
 
 patchlink::
-	cd patchlink; go get; go build
+	cd patchlink; go build
 
 clean:
 	rm -f patchpanel/patchpanel

@@ -1,6 +1,4 @@
-github.com/hshimamoto/go-iorelay v0.0.0-20200722213233-12dcf00e12a0 h1:yEQMa2h6rSjdz7ODc2JV1XbegdMqfxWu8LfYbjKjQ7o=
-github.com/hshimamoto/go-iorelay v0.0.0-20200722213233-12dcf00e12a0/go.mod h1:uyVVJ1n2K6ncZzpmp7EpaRzFfwsJcBg6Y1hXMeainSs=
-github.com/hshimamoto/go-iorelay v0.0.0-20200822035826-c2d7a868b951 h1:3NkmYFRaGRnaWP/ty1NO7XytxubAmCNo9Z9Gh6yM05E=
-github.com/hshimamoto/go-iorelay v0.0.0-20200822035826-c2d7a868b951/go.mod h1:uyVVJ1n2K6ncZzpmp7EpaRzFfwsJcBg6Y1hXMeainSs=
-github.com/hshimamoto/go-session v0.0.0-20200520123307-bdf55dab86cd h1:h5EDd4efh+e9xfsQftauuqAoagN4Nnkzur8Cv7ecQj4=
-github.com/hshimamoto/go-session v0.0.0-20200520123307-bdf55dab86cd/go.mod h1:KORDMWG+H/shIAh+4QVBycMLRMWBpGtH7GhyfeTbdpw=
+github.com/hshimamoto/go-iorelay v0.0.0-20201020222359-2da2fb3d13ee h1:+25IL2fmCCFbP0642MefSzjuRP9diYgIVcdgSeIj4wU=
+github.com/hshimamoto/go-iorelay v0.0.0-20201020222359-2da2fb3d13ee/go.mod h1:RnNNJphZLQlR3mzcQCGmkbu3XaLJgk4UeK9TYKxhJxY=
+github.com/hshimamoto/go-session v0.0.0-20201003040546-6a2734a32e63 h1:Bh9rsBpWoETqZvpIYRiL/7T6Lbdg5SLQtl+im3jTl4A=
+github.com/hshimamoto/go-session v0.0.0-20201003040546-6a2734a32e63/go.mod h1:i+PqoiyQzY9mrjdOUjZ8hULiziLys/LEEh0bI0rTQC0=
