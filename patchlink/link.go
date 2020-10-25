@@ -54,6 +54,12 @@ func link(name, remote, local string) {
 
     log.Printf("%s link established", name)
 
+    // enbale keep alive
+    if tcp, ok := conn.(*net.TCPConn); ok {
+	tcp.SetKeepAlive(true)
+	tcp.SetKeepAlivePeriod(time.Minute)
+    }
+
     running := true
 
     go func() {
